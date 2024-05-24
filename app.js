@@ -1,9 +1,10 @@
 // Imports
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 const mongoose = require('mongoose');
+const messageRoutes = require('./controllers/message');
 require('./config/passport')(passport);
 
 // App Set up
@@ -15,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // JSON parsing
 app.use(cors()); // allow all CORS requests
 app.use(passport.initialize());
+app.use('/messages', messageRoutes);
+
 
 // Database Set Up
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;

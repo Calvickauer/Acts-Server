@@ -17,9 +17,13 @@ const userSchema = new Schema({
     },
     date: {
         type: Date,
-        default: Date.now()
+        default: Date.now
+    },
+    profile: {
+        bio: String,
+        profilePicture: String,
     }
-})
+});
 
 const User = mongoose.model('User', userSchema);
 

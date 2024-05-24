@@ -118,5 +118,20 @@ router.get('/messages', passport.authenticate('jwt', { session: false }), async 
     res.json({ id, name, email, message: messageArray, sameUser });
 });
 
+
+// Get user profile
+router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+    res.json(req.user.profile);
+});
+
+// Update user profile
+router.post('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { bio, profilePicture } = req.body;
+    User.findByIdAndUpdate(req.user.id, { profile: { bio, profilePicture } }, { new: true }, (err, user) => {
+        if (err) return res.status(500).json(err);
+        res.json(user.profile);
+    });
+});
+
 // Exports
 module.exports = router;
