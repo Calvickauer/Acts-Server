@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 const mongoose = require('mongoose');
+const messageRoutes = require('./controllers/message');
 require('./config/passport')(passport);
 
 // App Set up
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // JSON parsing
 app.use(cors()); // allow all CORS requests
 app.use(passport.initialize());
+app.use('/messages', messageRoutes);
 
 // Database Set Up
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
@@ -26,7 +28,7 @@ db.once('open', () => {
 
 db.on('error', (error) => {
     console.log(`Database Error: ${error}`);
-});
+})
 
 // API Routes
 app.get('/', (req, res) => {
@@ -34,8 +36,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/examples', require('./controllers/example'));
-app.use('/users', require('./controllers/user')); // Make sure this is included
-app.use('/messages', require('./controllers/message'));
+app.use('/users', require('./controllers/user'));
 
 // Server
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
