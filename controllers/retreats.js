@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const Retreat = require('../models/retreat');
-const User = require('../models/user'); // Ensure this line is present
+const User = require('../models/user');
 const express = require('express');
 const router = express.Router();
 
@@ -57,7 +57,7 @@ router.post('/scrape', async (req, res) => {
     }
 
     if (allRetreats.length > 0) {
-      await Retreat.deleteMany({}); // Clear the collection before inserting new data
+      await Retreat.deleteMany({});
       await Retreat.insertMany(allRetreats);
       console.log('All retreats saved to the database');
     }

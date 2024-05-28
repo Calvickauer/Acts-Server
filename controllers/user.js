@@ -82,6 +82,7 @@ router.post('/login', async (req, res) => {
 router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
     User.findById(req.user.id)
       .select('-password')
+      .populate('retreats')
       .then(user => res.json(user))
       .catch(err => res.status(400).json(err));
 });
@@ -90,9 +91,9 @@ router.post('/profile', passport.authenticate('jwt', { session: false }), (req, 
     const { bio, profilePicture } = req.body;
     User.findByIdAndUpdate(req.user.id, { $set: { 'profile.bio': bio, 'profile.profilePicture': profilePicture } }, { new: true })
       .select('-password')
+      .populate('retreats')
       .then(user => res.json(user))
       .catch(err => res.status(400).json(err));
 });
-
 
 module.exports = router;
