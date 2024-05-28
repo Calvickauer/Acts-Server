@@ -1,7 +1,7 @@
-// controllers/retreats.js
 const axios = require('axios');
 const cheerio = require('cheerio');
 const Retreat = require('../models/retreat');
+const User = require('../models/user'); // Ensure this line is present
 const express = require('express');
 const router = express.Router();
 
@@ -69,7 +69,6 @@ router.post('/scrape', async (req, res) => {
   }
 });
 
-// New route to fetch retreats
 router.get('/', async (req, res) => {
   try {
     const retreats = await Retreat.find();
@@ -77,6 +76,55 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Error fetching retreats:', error);
     res.status(500).json({ message: 'Error fetching retreats' });
+  }
+});
+
+router.post('/add-to-profile', async (req, res) => {
+  const { userId, retreatId } = req.body;
+
+  try {
+    console.log('add-to-profile route hit');
+    console.log('userId:', userId);
+    console.log('retreatId:', retreatId);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const retreat = await Retreat.findById(retreatId);
+    if (!retreat) {
+      console.log('Retreat not found');
+      return res.status(404).json({ message: 'Retreat not found' });
+    }
+
+    if (!user.retreats.includes(retreatId)) {
+      user.retreats.push(retreatId);
+      await user.save();
+      console.log('Retreat added to user profile');
+    }
+
+    res.json({ message: 'Retreat added to profile', user });
+  } catch (error) {
+    console.error('Error adding retreat to profile:', error);
+    res.status(500).json({ message: 'Error adding retreat to profile' });
+  }
+});
+
+router.get('/profile', async (req, res) => {
+  try {
+    console.log('Fetching user profile for userId:', req.user.id);
+    const user = await User.findById(req.user.id).populate('retreats');
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log('User profile found:', user);
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Error fetching user profile' });
   }
 });
 

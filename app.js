@@ -16,7 +16,7 @@ app.use(cors());
 app.use(passport.initialize());
 
 app.use('/messages', messageRoutes);
-app.use('/retreats', retreatsRoutes); // Ensure this line is present
+app.use('/retreats', retreatsRoutes); 
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 mongoose.connect(MONGO_CONNECTION_STRING, {

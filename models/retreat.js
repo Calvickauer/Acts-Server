@@ -13,6 +13,14 @@ const retreatSchema = new Schema({
   location: {
     type: String,
     required: true
+  },
+  retreatType: {
+    type: String,
+    required: true
+  },
+  language: {
+    type: String,
+    required: true
   }
 });
 

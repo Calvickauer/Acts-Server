@@ -1,3 +1,5 @@
+// models/user.js
+
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -22,7 +24,8 @@ const userSchema = new Schema({
   profile: {
     bio: String,
     profilePicture: String
-  }
+  },
+  retreats: [{ type: Schema.Types.ObjectId, ref: 'Retreat' }]
 });
 
 const User = mongoose.model('User', userSchema);
