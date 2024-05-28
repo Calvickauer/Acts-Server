@@ -4,41 +4,42 @@ const cors = require('cors');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const messageRoutes = require('./controllers/message');
+const retreatsRoutes = require('./controllers/retreats');
 require('./config/passport')(passport);
 
-// App Set up
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json()); // JSON parsing
-app.use(cors()); // allow all CORS requests
+app.use(express.json());
+app.use(cors());
 app.use(passport.initialize());
-app.use('/messages', messageRoutes);
 
-// Database Set Up
+app.use('/messages', messageRoutes);
+app.use('/retreats', retreatsRoutes); // Ensure this line is present
+
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
-mongoose.connect(MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(MONGO_CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 const db = mongoose.connection;
 
 db.once('open', () => {
-    console.log(`Connected to MongoDB at HOST: ${db.host} and PORT: ${db.port}`);
+  console.log(`Connected to MongoDB at HOST: ${db.host} and PORT: ${db.port}`);
 });
 
 db.on('error', (error) => {
-    console.log(`Database Error: ${error}`);
-})
+  console.log(`Database Error: ${error}`);
+});
 
-// API Routes
 app.get('/', (req, res) => {
-  res.json({ name: 'MERN Auth API', greeting: 'Welcome to the our API', author: 'YOU', message: "Smile, you are being watched by the Backend Engineering Team" });
+  res.json({ name: 'MERN Auth API', greeting: 'Welcome to our API', author: 'YOU', message: "Smile, you are being watched by the Backend Engineering Team" });
 });
 
 app.use('/examples', require('./controllers/example'));
 app.use('/users', require('./controllers/user'));
 
-// Server
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
 
 module.exports = server;

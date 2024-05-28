@@ -4,23 +4,24 @@ const passport = require('passport');
 const Message = require('../models/message');
 
 // Get messages for a user, grouped by thread
-router.get('/:userId', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Message.find({ $or: [{ sender: req.params.userId }, { recipient: req.params.userId }] })
-    .populate('sender recipient', 'name email')
-    .exec((err, messages) => {
-      if (err) return res.status(500).json({ message: 'Internal server error' });
+router.get('/:userId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const messages = await Message.find({ $or: [{ sender: req.params.userId }, { recipient: req.params.userId }] })
+      .populate('sender recipient', 'name email');
+    
+    // Group messages by threadId
+    const threads = messages.reduce((acc, message) => {
+      if (!acc[message.threadId]) {
+        acc[message.threadId] = [];
+      }
+      acc[message.threadId].push(message);
+      return acc;
+    }, {});
 
-      // Group messages by threadId
-      const threads = messages.reduce((acc, message) => {
-        if (!acc[message.threadId]) {
-          acc[message.threadId] = [];
-        }
-        acc[message.threadId].push(message);
-        return acc;
-      }, {});
-
-      res.json(threads);
-    });
+    res.json(threads);
+  } catch (err) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 // Send a new message
