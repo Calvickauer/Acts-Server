@@ -9,7 +9,6 @@ router.get('/:userId', passport.authenticate('jwt', { session: false }), async (
     const messages = await Message.find({ $or: [{ sender: req.params.userId }, { recipient: req.params.userId }] })
       .populate('sender recipient', 'name email');
     
-    // Group messages by threadId
     const threads = messages.reduce((acc, message) => {
       if (!acc[message.threadId]) {
         acc[message.threadId] = [];
@@ -20,7 +19,8 @@ router.get('/:userId', passport.authenticate('jwt', { session: false }), async (
 
     res.json(threads);
   } catch (err) {
-    return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 

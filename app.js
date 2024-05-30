@@ -5,6 +5,8 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const messageRoutes = require('./controllers/message');
 const retreatsRoutes = require('./controllers/retreats');
+const exampleRoutes = require('./controllers/example');  // Ensure this line is included
+const userRoutes = require('./controllers/user');
 require('./config/passport')(passport);
 
 const app = express();
@@ -16,7 +18,9 @@ app.use(cors());
 app.use(passport.initialize());
 
 app.use('/messages', messageRoutes);
-app.use('/retreats', retreatsRoutes); 
+app.use('/retreats', retreatsRoutes);
+app.use('/examples', exampleRoutes);  // Ensure this line is included
+app.use('/users', userRoutes);
 
 const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
 mongoose.connect(MONGO_CONNECTION_STRING, {
@@ -36,9 +40,6 @@ db.on('error', (error) => {
 app.get('/', (req, res) => {
   res.json({ name: 'MERN Auth API', greeting: 'Welcome to our API', author: 'YOU', message: "Smile, you are being watched by the Backend Engineering Team" });
 });
-
-app.use('/examples', require('./controllers/example'));
-app.use('/users', require('./controllers/user'));
 
 const server = app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
 
